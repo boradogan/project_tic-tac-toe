@@ -59,36 +59,43 @@ const gameBoard = function() {
     const isGameFinished = function() {
         // returns the winning player if the game is finished, otherwise returns false;
         lastPlayedSymbol = board[lastRowPlayed][lastColumnPlayed];
-        
+        let list_check;
         // start by checking horizontal first
-        let list_check = [];
-        for (let column = 0; column < 3; column++) {
-            list_check.push(board[column, lastRowPlayed]);
-        }
-        if(list_check.every(symbol => symbol == lastPlayedSymbol)){
-            return true;
-        }
+        if (board[lastRowPlayed].every(symbol => symbol === lastPlayedSymbol)) {
+        return true;
+    }
 
         // check vertical
-        list_check = [];
-        for (let row = 0; row < 3; row++) {
-            list_check.push(board[lastColumnPlayed, row]);
-        }
-        if(list_check.every(symbol => symbol == lastPlayedSymbol)){
+        const columnToCheck = [board[0][lastColumnPlayed], board[1][lastColumnPlayed], board[2][lastColumnPlayed]];
+        if (columnToCheck.every(symbol => symbol === lastPlayedSymbol)) {
             return true;
         }
 
+
         // check diagonal 1
-        list_check = [0, 1, 2].map(n => board[n][n]);
-        if(list_check.every(symbol => symbol == lastPlayedSymbol)){
-            return true;
+        if (lastColumnPlayed === lastRowPlayed){
+            list_check = [0, 1, 2].map(n => board[n][n]);
+            if(list_check.every(symbol => symbol == lastPlayedSymbol)){
+                return true;
+            }
+
         }
 
         // check diagonal 2
-        list_check = [0, 1, 2].map(n => board[2 - n][n]);
-        if(list_check.every(symbol => symbol == lastPlayedSymbol)){
-            return true;
+
+        if (lastRowPlayed + lastColumnPlayed === 2) {
+
+            list_check = [0, 1, 2].map(n => board[2 - n][n]);
+            if(list_check.every(symbol => symbol == lastPlayedSymbol)){
+                return true;
+            }
         }
+        // Check for a tie
+        if (round > 9) {
+            console.log("It's a tie!");
+            return 'tie';
+        }
+
         return false;
     }
 
@@ -147,17 +154,29 @@ const gameRefree = function() {
         
         if(gameBoard.playTurn(currentPlayer, row, column)){
             // The round is played successfully.
-
+            gameFinishStatus = gameBoard.isGameFinished(); // Either true false or tie
             // The winner will be a player only if the current round is finished.
-            if(gameBoard.isGameFinished()) {
+            if(gameFinishStatus) {
                 // Handling round finish.
-                console.log(`${currentPlayer.name} has won the round.`);
-                currentPlayer.increaseScore();
+                if(gameFinishStatus != 'tie'){
+                    console.log(`${currentPlayer.name} has won the round.`);
+                    currentPlayer.increaseScore();
+
+                }else{
+                    console.log(`It's a tie.`)
+                }
                 console.log(gameBoard.getBoard());
                 console.log(`Scoreboard: ${player1.name}: ${player1.score} vs ${player2.name}: ${player2.score} `);
 
                 if(currentRound == totalRounds) {
                     console.log(`The game finished today.`);
+                    if(player1.score > player2.score) {
+                        console.log(`The winner is ${player1.name}`);
+                    } else if (player1.score < player2.score) {
+                        console.log(`The winner is ${player2.name}`);
+                    } else {
+                        console.log('We call it a tie for today.');
+                    }
                 } else {
                     currentRound = currentRound + 1;
                     newRound();
