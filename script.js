@@ -110,7 +110,7 @@ const gameBoard = function() {
 
 const gameRefree = function() {
     // The game will be 4 rounds by default
-    let currentRound = 1;
+    let currentRound = 0;
     let currentRoundWinner;
     let totalRounds;
     let startingPlayer = player2;
@@ -120,6 +120,7 @@ const gameRefree = function() {
         totalRounds = rounds;
     }
     const newRound = function() {
+        currentRound++;
         if(startingPlayer == player1) {
             startingPlayer = player2;
         } else {
@@ -187,8 +188,9 @@ const gameRefree = function() {
                         console.log('We call it a tie for today.');
                     }
                 } else {
-                    currentRound = currentRound + 1;
-                    newRound();
+                    // currentRound = currentRound + 1;
+                    // newRound();
+                    screenController.waitForNewRound();
 
 
                 }
@@ -241,6 +243,8 @@ const screenController = function() {
     let gridDOM;
     let scoreDOM;
     let roundDOM;
+
+    let nextRoundButton;
     const initController = function() {
         showView('settings-view')
         // Does the necessary caching for the DOM elements
@@ -268,7 +272,7 @@ const screenController = function() {
         scoreDOM = document.querySelector('.score-text');
 
         roundDOM = document.querySelector('.round-text');
-       
+        nextRoundButton = document.getElementById('next-round-button');
         // Select all elements with class 'box'
         const boxes = boardGrid.querySelectorAll('.box');
         // Create a 2D array for gridDOM
@@ -288,6 +292,12 @@ const screenController = function() {
         settingsForm.addEventListener('submit', (event) => {
             submitHandleSettings(event);
         })
+
+        nextRoundButton.addEventListener('click', (event)=> {
+            gameRefree.newRound();
+            nextRoundButton.classList.add('hidden');
+            drawGameBoard();
+        })
     }
 
     const showView  = function(viewId) {
@@ -301,7 +311,10 @@ const screenController = function() {
         console.log(viewDOMHash[viewId])
 
     }
+    const waitForNewRound = function() {
+        nextRoundButton.classList.remove('hidden');
 
+    }
     const submitHandleSettings = function(event) {
         // Setting up the game based in the data read in the settings-form
         event.preventDefault();
@@ -357,7 +370,7 @@ const screenController = function() {
     const showRound = function() {
         roundDOM.textContent = `Round: ${gameRefree.getCurrentRound()} of ${gameRefree.getTotalRounds()}`;
     }
-    return {initController, drawGameBoard, showScore, showRound, showView};
+    return {initController, drawGameBoard, showScore, showRound, showView, waitForNewRound};
 }();
 
 const main = function() {
