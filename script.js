@@ -225,7 +225,18 @@ const screenController = function() {
     const defaultPlayer1Name = 'Alice';
     const defaultPlayer2Name = 'Bob';
     const defaultTotalRounds = '2';
-    
+
+    // Caching up the view DOM's and indexing them
+    const viewDOMList = document.querySelectorAll('.view');
+    const viewDOMHash = {
+        addDOM(domElement){
+            this[domElement.id] = domElement;
+        }
+    }
+    viewDOMList.forEach(view => {
+        viewDOMHash.addDOM(view);
+    })
+
     let boardGrid;
     let gridDOM;
     let scoreDOM;
@@ -278,6 +289,13 @@ const screenController = function() {
         })
     }
 
+    const showView  = function(viewId) {
+        // viewDOMList.forEach(view => {
+        //     view.classList.add('hidden');
+        // })
+        console.log(viewDOMHash[viewId])
+
+    }
 
     const submitHandleSettings = function(event) {
         event.preventDefault();
@@ -332,7 +350,7 @@ const screenController = function() {
     const showRound = function() {
         roundDOM.textContent = `Round: ${gameRefree.getCurrentRound()} of ${gameRefree.getTotalRounds()}`;
     }
-    return {initController, drawGameBoard, showScore, showRound};
+    return {initController, drawGameBoard, showScore, showRound, showView};
 }();
 
 const main = function() {
