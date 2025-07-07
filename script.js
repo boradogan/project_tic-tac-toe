@@ -8,6 +8,9 @@ const Player = function(name, marker) {
 Player.prototype.increaseScore = function() {
     this.score = this.score + 1;
 }
+Player.prototype.resetScore = function() {
+    this.score = 0;
+}
 Player.prototype.setName = function(newName) {
     this.name = newName;
 }
@@ -121,9 +124,10 @@ const gameRefree = function() {
         console.log(`Setting total rounds to ${rounds}`);
         totalRounds = rounds;
     }
-    const newRound = function() {
+    const newRound = function(setRound) {
+        // if setRound is undefined, the currentRound is increased by 1, otherwise, it is set to setRound
         isListening = true;
-        currentRound++;
+        currentRound = setRound || (currentRound + 1);
         if(startingPlayer == player1) {
             startingPlayer = player2;
         } else {
@@ -135,8 +139,10 @@ const gameRefree = function() {
         console.log(`We are at round ${currentRound} out of ${totalRounds}`);
         screenController.showRound();   
         screenController.showScore(); 
+        screenController.showInfoMessage('');
 
         gameBoard.initBoard();
+        screenController.drawGameBoard();
         console.log(gameBoard.getBoard());
 
     }
@@ -173,6 +179,7 @@ const gameRefree = function() {
                 // Handling round finish.
                 if(gameFinishStatus != 'tie'){
                     console.log(`${currentPlayer.name} has won the round.`);
+                    screenController.appendInfoMessage(`${currentPlayer.name} has won the round.`);
                     currentPlayer.increaseScore();
                     screenController.showScore();
                 }else{
@@ -182,14 +189,17 @@ const gameRefree = function() {
                 console.log(`Scoreboard: ${player1.name}: ${player1.score} vs ${player2.name}: ${player2.score} `);
 
                 if(currentRound == totalRounds) {
-                    console.log(`The game finished today.`);
+                    const messagePrefix = 'The game finished.\n';
                     isListening = false;
                     if(player1.score > player2.score) {
+                        screenController.appendInfoMessage(`${messagePrefix} The winner is ${player1.name}`);
                         console.log(`The winner is ${player1.name}`);
                     } else if (player1.score < player2.score) {
+                        screenController.appendInfoMessage(`${messagePrefix} The winner is ${player2.name}`);
                         console.log(`The winner is ${player2.name}`);
                     } else {
-                        console.log('We call it a tie for today.');
+                        screenController.appendInfoMessage('We call it a tie.');
+                        console.log('We call it a tie.');
                     }
                 } else {
                     // currentRound = currentRound + 1;
@@ -235,7 +245,7 @@ const screenController = function() {
     const defaultPlayer1Name = 'Alice';
     const defaultPlayer2Name = 'Bob';
     const defaultTotalRounds = '2';
-    
+    const infoMessage = document.getElementById('info-message');
     // Caching up the view DOM's and indexing them
     const viewDOMList = document.querySelectorAll('.view');
     const viewDOMHash = {
@@ -253,6 +263,7 @@ const screenController = function() {
     let roundDOM;
 
     let nextRoundButton;
+    let newGameButton;
     const initController = function() {
         showView('settings-view')
         // Does the necessary caching for the DOM elements
@@ -281,6 +292,7 @@ const screenController = function() {
 
         roundDOM = document.querySelector('.round-text');
         nextRoundButton = document.getElementById('next-round-button');
+        newGameButton = document.getElementById('new-game-button');
         // Select all elements with class 'box'
         const boxes = boardGrid.querySelectorAll('.box');
         // Create a 2D array for gridDOM
@@ -305,6 +317,10 @@ const screenController = function() {
             gameRefree.newRound();
             nextRoundButton.classList.add('hidden');
             drawGameBoard();
+        })
+
+        newGameButton.addEventListener('click', (event) => {
+            showView('settings-view');
         })
     }
 
@@ -333,8 +349,9 @@ const screenController = function() {
         
         console.log(`Player 2 Name is : ${player2.name}`);
         gameRefree.setTotalRounds(formData.get('total-rounds-input'));
-
-        gameRefree.newRound();
+        player1.resetScore();
+        player2.resetScore();
+        gameRefree.newRound(1);
         showView('main-game-view');
 
     }
@@ -383,9 +400,14 @@ const screenController = function() {
     }
 
     const showInfoMessage = function(text){
+        infoMessage.textContent = text;
 
     }
-    return {initController, drawGameBoard, showScore, showRound, showView, waitForNewRound};
+    const appendInfoMessage = function(text){
+        infoMessage.textContent += '\n';
+        infoMessage.textContent += text;
+    }
+    return {initController, drawGameBoard, showScore, showRound, showView, waitForNewRound, showInfoMessage, appendInfoMessage};
 }();
 
 const main = function() {
