@@ -8,9 +8,12 @@ const Player = function(name, marker) {
 Player.prototype.increaseScore = function() {
     this.score = this.score + 1;
 }
+Player.prototype.setName = function(newName) {
+    this.name = newName;
+}
 
-player1 = new Player("Alice", "X");
-player2 = new Player('Bob', 'O');
+const player1 = new Player("", "X");
+const player2 = new Player('', 'O');
 
 const gameBoard = function() {
     let round = 1;
@@ -109,10 +112,11 @@ const gameRefree = function() {
     // The game will be 4 rounds by default
     let currentRound = 1;
     let currentRoundWinner;
-    let totalRounds = 4;
+    let totalRounds;
     let startingPlayer = player2;
     let currentPlayer = startingPlayer;
     const setTotalRounds = function(rounds) {
+        console.log(`Setting total rounds to ${rounds}`);
         totalRounds = rounds;
     }
     const newRound = function() {
@@ -125,7 +129,8 @@ const gameRefree = function() {
         console.log('Attention, attention, refree speaking!');
         console.log(`${startingPlayer.name} is starting the round.`);
         console.log(`We are at round ${currentRound} out of ${totalRounds}`);
-        screenController.showRound();    
+        screenController.showRound();   
+        screenController.showScore(); 
 
         gameBoard.initBoard();
         console.log(gameBoard.getBoard());
@@ -212,16 +217,43 @@ const gameRefree = function() {
 
 
 const screenController = function() {
+    let settingsForm;
+    let player1Input;
+    let player2Input;
+    let totalRoundsInput;
+    let totalRoundsText;
+    const defaultPlayer1Name = 'Alice';
+    const defaultPlayer2Name = 'Bob';
+    const defaultTotalRounds = '2';
+    
     let boardGrid;
     let gridDOM;
     let scoreDOM;
     let roundDOM;
     const initController = function() {
         // Does the necessary caching for the DOM elements
+        settingsForm = document.querySelector('.settings-form');
+        player1Input = document.getElementById('player1-name');
+        player2Input = document.getElementById('player2-name');
+
+
+        player1Input.placeholder = defaultPlayer1Name;
+        player2Input.placeholder = defaultPlayer2Name;
+
+        totalRoundsInput = document.getElementById('total-rounds-input');
+        totalRoundsInput.value = defaultTotalRounds;
+        totalRoundsText = document.getElementById('total-rounds-text');
+        totalRoundsText.textContent = defaultTotalRounds;
+        totalRoundsInput.addEventListener('input', (event) => {
+            totalRoundsText.textContent = (event.target.value);
+        })
+
+
+
+        // Caching the board
         boardGrid = document.querySelector(".game-board");
 
         scoreDOM = document.querySelector('.score-text');
-        showScore();
 
         roundDOM = document.querySelector('.round-text');
        
@@ -241,8 +273,25 @@ const screenController = function() {
             clickHandlerBoard(event.target.closest('.box'));
 
         });
+        settingsForm.addEventListener('submit', (event) => {
+            submitHandleSettings(event);
+        })
     }
 
+
+    const submitHandleSettings = function(event) {
+        event.preventDefault();
+        const formData = new FormData(event.target);
+        player1.setName(formData.get('player1-name') || defaultPlayer1Name);
+        player2.setName(formData.get('player2-name') || defaultPlayer2Name);
+        console.log(`Player 1 Name is : ${player1.name}`);
+        
+        console.log(`Player 2 Name is : ${player2.name}`);
+        gameRefree.setTotalRounds(formData.get('total-rounds-input'));
+
+        gameRefree.newRound();
+
+    }
     const clickHandlerBoard = function(eventTargetBox){
         const row = eventTargetBox.dataset.row;
         const column = eventTargetBox.dataset.col;
@@ -288,6 +337,12 @@ const screenController = function() {
 
 const main = function() {
     screenController.initController();
-    gameRefree.newRound();
+
 
 }();
+
+
+
+
+
+

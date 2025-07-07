@@ -7,32 +7,59 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
     <main>
-        <div class="name-display">
-            <p class="name first">Ali</p>
-            <p class="name">vs</p>
-            <p class="name second">Bali</p>
-        </div>
-        <div class="score-display">
-            <h3>Score:</h3>
-            <p class="score-text"></p>
-            <h4 class="round-display"></h4>
-            <p class="round-text"></p>
-        </div>
-        <div class="game-board">
-            <div class="box" data-row= "0" data-col="0"></div>
-            <div class="box" data-row= "0" data-col="1"></div>
-            <div class="box" data-row= "0" data-col="2"></div>
-            <div class="box" data-row= "1" data-col="0"></div>
-            <div class="box" data-row= "1" data-col="1"></div>
-            <div class="box" data-row= "1" data-col="2"></div>
-            <div class="box" data-row= "2" data-col="0"></div>
-            <div class="box" data-row= "2" data-col="1"></div>
-            <div class="box" data-row= "2" data-col="2"></div>
+        <section class="view" id="settings">
+            <h1>Tic-Tac-Toe</h1>
 
-        </div>
+            <form action="" class="settings-form">
+                <div class="form-box">
 
+                    <label for="player1-name">Player 1 Name:</label>
+                    <input type="text" name="player1-name" id="player1-name">
+                </div>
+                <div class="form-box">
+                    <label for="player2-name">Player 2 Name:</label>
+                    <input type="text" name="player2-name" id="player2-name">
+                </div>
+                <div class="form-box">
+
+                    <label for="total-rounds">Total Rounds</label>
+                    <input type="range" name="total-rounds-input" id="total-rounds-input" min="2" max="6" step="2">
+                    <p id="total-rounds-text"></p>
+                </div>
+                <div class="form-box">
+                    <button type="submit">Start Game</button>
+                </div>
+            </form>
+        </section>
+
+        
+        <section class="view" id="main-game">
+            <!-- <div class="name-display">
+                <p class="name first">Ali</p>
+                <p class="name">vs</p>
+                <p class="name second">Bali</p>
+            </div> -->
+            <div class="score-display">
+                <h3>Score:</h3>
+                <p class="score-text"></p>
+                <h4 class="round-display"></h4>
+                <p class="round-text"></p>
+            </div>
+            <div class="game-board">
+                <div class="box" data-row= "0" data-col="0"></div>
+                <div class="box" data-row= "0" data-col="1"></div>
+                <div class="box" data-row= "0" data-col="2"></div>
+                <div class="box" data-row= "1" data-col="0"></div>
+                <div class="box" data-row= "1" data-col="1"></div>
+                <div class="box" data-row= "1" data-col="2"></div>
+                <div class="box" data-row= "2" data-col="0"></div>
+                <div class="box" data-row= "2" data-col="1"></div>
+                <div class="box" data-row= "2" data-col="2"></div>
+                
+            </div>
+        </section>
+        
     </main>
     <footer></footer>
     
