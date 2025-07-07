@@ -115,11 +115,14 @@ const gameRefree = function() {
     let totalRounds;
     let startingPlayer = player2;
     let currentPlayer = startingPlayer;
+    // isListening : whether or not gameRefree is accepting new clicks
+    let isListening;
     const setTotalRounds = function(rounds) {
         console.log(`Setting total rounds to ${rounds}`);
         totalRounds = rounds;
     }
     const newRound = function() {
+        isListening = true;
         currentRound++;
         if(startingPlayer == player1) {
             startingPlayer = player2;
@@ -180,6 +183,7 @@ const gameRefree = function() {
 
                 if(currentRound == totalRounds) {
                     console.log(`The game finished today.`);
+                    isListening = false;
                     if(player1.score > player2.score) {
                         console.log(`The winner is ${player1.name}`);
                     } else if (player1.score < player2.score) {
@@ -190,6 +194,7 @@ const gameRefree = function() {
                 } else {
                     // currentRound = currentRound + 1;
                     // newRound();
+                    isListening = false;
                     screenController.waitForNewRound();
 
 
@@ -210,9 +215,12 @@ const gameRefree = function() {
     const getCurrentRound = function(){
         return currentRound;
     }
+    const getIsListening = function() {
+        return isListening;
+    }
 
 
-    return {setTotalRounds, getCurrentPlayer, setActionForCurrentPlayer, getCurrentRound, newRound, getTotalRounds }
+    return {setTotalRounds, getCurrentPlayer, setActionForCurrentPlayer, getCurrentRound, newRound, getTotalRounds, getIsListening }
 }();
 
 
@@ -227,7 +235,7 @@ const screenController = function() {
     const defaultPlayer1Name = 'Alice';
     const defaultPlayer2Name = 'Bob';
     const defaultTotalRounds = '2';
-
+    
     // Caching up the view DOM's and indexing them
     const viewDOMList = document.querySelectorAll('.view');
     const viewDOMHash = {
@@ -334,8 +342,11 @@ const screenController = function() {
         const row = eventTargetBox.dataset.row;
         const column = eventTargetBox.dataset.col;
         console.log(`Cliked on Row: ${row}, Column: ${column}`);
-        gameRefree.setActionForCurrentPlayer(row, column);
-        drawGameBoard();
+        if(gameRefree.getIsListening()){
+
+            gameRefree.setActionForCurrentPlayer(row, column);
+            drawGameBoard();
+        }
 
 
     }
@@ -369,6 +380,10 @@ const screenController = function() {
     }
     const showRound = function() {
         roundDOM.textContent = `Round: ${gameRefree.getCurrentRound()} of ${gameRefree.getTotalRounds()}`;
+    }
+
+    const showInfoMessage = function(text){
+
     }
     return {initController, drawGameBoard, showScore, showRound, showView, waitForNewRound};
 }();
