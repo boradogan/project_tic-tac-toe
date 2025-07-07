@@ -236,12 +236,13 @@ const screenController = function() {
     viewDOMList.forEach(view => {
         viewDOMHash.addDOM(view);
     })
-
+    // 
     let boardGrid;
     let gridDOM;
     let scoreDOM;
     let roundDOM;
     const initController = function() {
+        showView('settings-view')
         // Does the necessary caching for the DOM elements
         settingsForm = document.querySelector('.settings-form');
         player1Input = document.getElementById('player1-name');
@@ -290,14 +291,19 @@ const screenController = function() {
     }
 
     const showView  = function(viewId) {
-        // viewDOMList.forEach(view => {
-        //     view.classList.add('hidden');
-        // })
+        // viewId is the string of the id of the view section desired to be shown
+        // The rest of the sections are hidden
+        viewDOMList.forEach(view => {
+            view.classList.add('hidden');
+        })
+
+        viewDOMHash[viewId].classList.remove('hidden');
         console.log(viewDOMHash[viewId])
 
     }
 
     const submitHandleSettings = function(event) {
+        // Setting up the game based in the data read in the settings-form
         event.preventDefault();
         const formData = new FormData(event.target);
         player1.setName(formData.get('player1-name') || defaultPlayer1Name);
@@ -308,6 +314,7 @@ const screenController = function() {
         gameRefree.setTotalRounds(formData.get('total-rounds-input'));
 
         gameRefree.newRound();
+        showView('main-game-view');
 
     }
     const clickHandlerBoard = function(eventTargetBox){
