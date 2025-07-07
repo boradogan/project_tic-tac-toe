@@ -1,0 +1,24 @@
+:root{
+    --grid-size: 100px;
+}
+
+
+.game-board{
+    display: grid;
+    grid-template-columns: repeat(3, var(--grid-size));
+    grid-template-rows: repeat(3, var(--grid-size));
+
+}
+.box {
+    display: flex;
+}
+.box > img {
+    flex: 1;
+}
+p.name {
+    display: inline;
+}
+
+.box {
+    border: 1px solid black;
+}

@@ -123,11 +123,13 @@ const gameRefree = function() {
         console.log('Attention, attention, refree speaking!');
         console.log(`${startingPlayer.name} is starting the round.`);
         console.log(`We are at round ${currentRound} out of ${totalRounds}`);
+        screenController.showRound();    
+
         gameBoard.initBoard();
         console.log(gameBoard.getBoard());
 
     }
-    newRound();
+    // newRound();
     // const setStartingPlayer = function(player) {
     //     if(currentRound != 1) {
     //         throw new Error("You cannot set the starting player at this point.");
@@ -161,7 +163,7 @@ const gameRefree = function() {
                 if(gameFinishStatus != 'tie'){
                     console.log(`${currentPlayer.name} has won the round.`);
                     currentPlayer.increaseScore();
-
+                    screenController.showScore();
                 }else{
                     console.log(`It's a tie.`)
                 }
@@ -192,10 +194,98 @@ const gameRefree = function() {
         }
     }
 
+    const getTotalRounds = function() {
+        return totalRounds;
+    }
+
     const getCurrentRound = function(){
         return currentRound;
     }
 
 
-    return {setTotalRounds, getCurrentPlayer, setActionForCurrentPlayer, getCurrentRound }
+    return {setTotalRounds, getCurrentPlayer, setActionForCurrentPlayer, getCurrentRound, newRound, getTotalRounds }
+}();
+
+
+
+
+const screenController = function() {
+    let boardGrid;
+    let gridDOM;
+    let scoreDOM;
+    let roundDOM;
+    const initController = function() {
+        // Does the necessary caching for the DOM elements
+        boardGrid = document.querySelector(".game-board");
+
+        scoreDOM = document.querySelector('.score-text');
+        showScore();
+
+        roundDOM = document.querySelector('.round-text');
+       
+        // Select all elements with class 'box'
+        const boxes = boardGrid.querySelectorAll('.box');
+        // Create a 2D array for gridDOM
+        gridDOM = [[], [], []];
+        boxes.forEach(box => {
+            const row = parseInt(box.getAttribute('row'), 10);
+            const col = parseInt(box.getAttribute('col'), 10);
+            gridDOM[row][col] = box;
+        });
+        // console.log(gridDOM);
+
+        // Add Event Listeners
+         boardGrid.addEventListener('click', (event) => {
+            clickHandlerBoard(event.target.closest('.box'));
+
+        });
+    }
+
+    const clickHandlerBoard = function(eventTargetBox){
+        const row = eventTargetBox.getAttribute('row');
+        const column = eventTargetBox.getAttribute('col');
+        console.log(`Cliked on Row: ${row}, Column: ${column}`);
+        gameRefree.setActionForCurrentPlayer(row, column);
+        drawGameBoard();
+
+
+    }
+    const drawGameBoard= function() {
+        const currentBoard = gameBoard.getBoard();
+        for(let col = 0; col <= 2; col++) {
+            for(let row = 0; row <= 2; row++){
+                gridDOM[row][col].innerHTML = "";
+                const icon = document.createElement('img')
+                switch (currentBoard[row][col]) {
+                    case "X":
+                        // console.log(`Drawing X at Row: ${row} Col: ${col}`)
+                        icon.src = "./icons/icons8-cross.svg"
+                        break;
+                    case "O":
+                        // console.log(`Drawing O at Row: ${row} Col: ${col}`)
+                        icon.src = "./icons/icons8-round.svg"
+                    default:
+                        break;
+                }
+                gridDOM[row][col].appendChild(icon);
+            }
+        }
+
+
+    }
+
+    const showScore = function() {
+        scoreDOM.textContent = `${player1.name}: ${player1.score} vs ${player2.name}: ${player2.score}`;
+
+    }
+    const showRound = function() {
+        roundDOM.textContent = `Round: ${gameRefree.getCurrentRound()} of ${gameRefree.getTotalRounds()}`;
+    }
+    return {initController, drawGameBoard, showScore, showRound};
+}();
+
+const main = function() {
+    screenController.initController();
+    gameRefree.newRound();
+
 }();
