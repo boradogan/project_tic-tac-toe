@@ -58,6 +58,7 @@ const gameBoard = function() {
     }
     const isGameFinished = function() {
         // returns the winning player if the game is finished, otherwise returns false;
+
         lastPlayedSymbol = board[lastRowPlayed][lastColumnPlayed];
         let list_check;
         // start by checking horizontal first
@@ -83,7 +84,8 @@ const gameBoard = function() {
 
         // check diagonal 2
 
-        if (lastRowPlayed + lastColumnPlayed === 2) {
+        if (parseInt(lastRowPlayed, 10) + parseInt(lastColumnPlayed, 10) == 2) {
+
 
             list_check = [0, 1, 2].map(n => board[2 - n][n]);
             if(list_check.every(symbol => symbol == lastPlayedSymbol)){
