@@ -228,8 +228,8 @@ const screenController = function() {
         // Create a 2D array for gridDOM
         gridDOM = [[], [], []];
         boxes.forEach(box => {
-            const row = parseInt(box.getAttribute('row'), 10);
-            const col = parseInt(box.getAttribute('col'), 10);
+            const row = parseInt(box.dataset.row, 10);
+            const col = parseInt(box.dataset.col, 10);
             gridDOM[row][col] = box;
         });
         // console.log(gridDOM);
@@ -242,8 +242,8 @@ const screenController = function() {
     }
 
     const clickHandlerBoard = function(eventTargetBox){
-        const row = eventTargetBox.getAttribute('row');
-        const column = eventTargetBox.getAttribute('col');
+        const row = eventTargetBox.dataset.row;
+        const column = eventTargetBox.dataset.col;
         console.log(`Cliked on Row: ${row}, Column: ${column}`);
         gameRefree.setActionForCurrentPlayer(row, column);
         drawGameBoard();
